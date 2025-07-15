@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Casier Judiciaire - SASP | GVibe</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 40px;
+    }
+
+    h1 {
+      color: darkred;
+      text-align: center;
+    }
+
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: darkred;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .output {
+      margin-top: 30px;
+      white-space: pre-wrap;
+      background: #eee;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .button-group {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Casier Judiciaire - SASP | GVibe</h1>
+
+    <label>Nom complet :</label>
+    <input id="nom">
+
+    <label>Date de naissance :</label>
+    <input id="dob" type="date">
+
+    <label>Identité RP :</label>
+    <input id="identite">
+
+    <label>Numéro d'identité :</label>
+    <input id="nid">
+
+    <label>Remarques :</label>
+    <textarea id="remarques" rows="3">Aucune remarque</textarea>
+
+    <div class="button-group">
+      <button onclick="generer()">Générer</button>
+      <button onclick="telechargerPDF()">Télécharger en PDF</button>
+    </div>
+
+    <div class="output" id="casierOutput" style="display:none;"></div>
+  </div>
+
+  <script>
+    function generer() {
+      const nom = document.getElementById("nom").value;
+      const dob = document.getElementById("dob").value;
+      const identite = document.getElementById("identite").value;
+      const nid = document.getElementById("nid").value;
+      const remarques = document.getElementById("remarques").value;
+
+      const today = new Date().toLocaleDateString();
+
+      const casier = `
+📁 CASIER JUDICIAIRE - SASP | GVibe
+
+👤 Nom complet : ${nom}
+🆔 Identité RP : ${identite}
+📅 Date de naissance : ${dob}
+🔢 Numéro d'identité : ${nid}
+
+---
+🚔 Antécédents judiciaires :
+- Aucune infraction pénale
+- Aucun mandat actif
+- Aucun casier connu
+
+📎 Remarques :
+${remarques}
+
+✅ Casier vierge certifié par le SASP
+📅 Généré le : ${today}
+`;
+
+      const output = document.getElementById("casierOutput");
+      output.style.display = "block";
+      output.textContent = casier;
+    }
+
+    function telechargerPDF() {
+      const element = document.getElementById("casierOutput");
+      if (element.style.display === "none") {
+        alert("Veuillez d'abord générer le casier.");
+        return;
+      }
+
+      const opt = {
+        margin: 0.5,
+        filename: 'casier_judiciaire_SASP.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+</body>
+</html>
