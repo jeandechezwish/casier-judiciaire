@@ -11,30 +11,41 @@
       margin: 40px;
     }
 
-    h1 {
+    h1, h2 {
       color: darkred;
       text-align: center;
     }
 
     .form-container {
       background: white;
-      padding: 20px;
+      padding: 30px;
       border-radius: 10px;
-      max-width: 700px;
+      max-width: 850px;
       margin: auto;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     }
 
     label {
       font-weight: bold;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       margin-bottom: 15px;
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 5px;
+    }
+
+    .section-title {
+      margin-top: 30px;
+      font-size: 18px;
+      border-bottom: 2px solid darkred;
+    }
+
+    .button-group {
+      text-align: center;
+      margin-top: 20px;
     }
 
     button {
@@ -43,79 +54,162 @@
       color: white;
       border: none;
       border-radius: 5px;
-      margin-right: 10px;
+      margin: 5px;
       cursor: pointer;
     }
 
     .output {
-      margin-top: 30px;
-      white-space: pre-wrap;
+      display: none;
       background: #eee;
-      padding: 20px;
+      padding: 25px;
       border-radius: 10px;
-    }
-
-    .button-group {
-      text-align: center;
+      white-space: pre-wrap;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
   <div class="form-container">
-    <h1>Casier Judiciaire - SASP | GVibe</h1>
+    <h1>CASIER JUDICIAIRE - SASP | GVibe</h1>
+    <p style="text-align: center; font-style: italic;">
+      Document officiel émis par le San Andreas State Police - Division Judiciaire
+    </p>
 
-    <label>Nom complet :</label>
-    <input id="nom">
+    <div class="section-title">👤 IDENTITÉ DU CITOYEN</div>
+    <label>Nom complet :</label><input id="nom">
+    <label>Nom RP / Alias :</label><input id="alias">
+    <label>Date de naissance :</label><input id="dob" type="date">
+    <label>Nationalité :</label><input id="nationalite">
+    <label>Sexe :</label>
+    <select id="sexe">
+      <option value="Homme">Homme</option>
+      <option value="Femme">Femme</option>
+      <option value="Autre">Autre</option>
+    </select>
+    <label>Numéro d'identité :</label><input id="nid">
+    <label>Adresse déclarée :</label><input id="adresse">
 
-    <label>Date de naissance :</label>
-    <input id="dob" type="date">
+    <div class="section-title">📄 INFORMATIONS GÉNÉRALES</div>
+    <label>Numéro de dossier judiciaire :</label><input id="dossier">
+    <label>Statut légal :</label>
+    <select id="statut">
+      <option value="Actif">Actif</option>
+      <option value="Résident temporaire">Résident temporaire</option>
+      <option value="Réfugié">Réfugié</option>
+      <option value="Sans statut">Sans statut</option>
+    </select>
+    <label>Date de mise à jour :</label><input id="maj" type="date">
 
-    <label>Identité RP :</label>
-    <input id="identite">
+    <div class="section-title">🚨 ANTÉCÉDENTS</div>
+    <label>Infractions pénales :</label><input value="☐ Aucune" readonly>
+    <label>Infractions au code de la route :</label><input value="☐ Aucune" readonly>
+    <label>Condamnations judiciaires :</label><input value="☐ Aucune" readonly>
+    <label>Peines purgées :</label><input value="☐ Aucune" readonly>
+    <label>Mandats en cours :</label><input value="☐ Aucun" readonly>
 
-    <label>Numéro d'identité :</label>
-    <input id="nid">
+    <div class="section-title">🔍 SURVEILLANCES OU OBSERVATIONS</div>
+    <label>Fiche S :</label><input value="☐ Non" readonly>
+    <label>Fiche R :</label><input value="☐ Non" readonly>
+    <label>Observation spéciale :</label><input value="☐ Aucune" readonly>
 
-    <label>Remarques :</label>
-    <textarea id="remarques" rows="3">Aucune remarque</textarea>
+    <div class="section-title">📎 REMARQUES ET NOTES ADMINISTRATIVES</div>
+    <textarea id="remarques" rows="4">
+Rien à signaler. Le citoyen ne présente aucun antécédent judiciaire dans l'État de San Andreas.
+Aucune mesure de surveillance ni fiche active enregistrée à ce jour.
+    </textarea>
+
+    <div class="section-title">📝 SIGNATURES & VALIDATIONS</div>
+    <label>Inspecteur référent :</label><input id="inspecteur">
+    <label>Matricule :</label><input id="matricule">
+    <label>Signature :</label><input id="signature">
+    <label>Date :</label><input id="date_signature" type="date">
 
     <div class="button-group">
       <button onclick="generer()">Générer</button>
       <button onclick="telechargerPDF()">Télécharger en PDF</button>
     </div>
 
-    <div class="output" id="casierOutput" style="display:none;"></div>
+    <div class="output" id="casierOutput"></div>
   </div>
 
   <script>
     function generer() {
       const nom = document.getElementById("nom").value;
+      const alias = document.getElementById("alias").value;
       const dob = document.getElementById("dob").value;
-      const identite = document.getElementById("identite").value;
+      const nationalite = document.getElementById("nationalite").value;
+      const sexe = document.getElementById("sexe").value;
       const nid = document.getElementById("nid").value;
+      const adresse = document.getElementById("adresse").value;
+
+      const dossier = document.getElementById("dossier").value;
+      const statut = document.getElementById("statut").value;
+      const maj = document.getElementById("maj").value;
+
       const remarques = document.getElementById("remarques").value;
 
-      const today = new Date().toLocaleDateString();
+      const inspecteur = document.getElementById("inspecteur").value;
+      const matricule = document.getElementById("matricule").value;
+      const signature = document.getElementById("signature").value;
+      const date_sig = document.getElementById("date_signature").value;
 
-      const casier = `
-📁 CASIER JUDICIAIRE - SASP | GVibe
+      const casier = `## 📄 CASIER JUDICIAIRE - SASP | GVibe
 
-👤 Nom complet : ${nom}
-🆔 Identité RP : ${identite}
-📅 Date de naissance : ${dob}
-🔢 Numéro d'identité : ${nid}
+*Document officiel émis par le San Andreas State Police - Division Judiciaire*
 
 ---
-🚔 Antécédents judiciaires :
-- Aucune infraction pénale
-- Aucun mandat actif
-- Aucun casier connu
 
-📎 Remarques :
+### 👤 IDENTITÉ DU CITOYEN
+* Nom complet : ${nom}
+* Nom RP / Alias : ${alias}
+* Date de naissance : ${dob}
+* Nationalité : ${nationalite}
+* Sexe : ${sexe}
+* Numéro d'identité : ${nid}
+* Adresse déclarée : ${adresse}
+
+---
+
+### 📄 INFORMATIONS GÉNÉRALES
+* Numéro de dossier judiciaire : CJ-SASP-${dossier}
+* État du casier : ✅ VIERGE
+* Dernière mise à jour : ${maj}
+* Statut légal : ${statut}
+
+---
+
+### 🚨 ANTÉCÉDENTS
+* Infractions pénales : ☐ Aucune
+* Infractions au code de la route : ☐ Aucune
+* Condamnations judiciaires : ☐ Aucune
+* Peines purgées : ☐ Aucune
+* Mandats en cours : ☐ Aucun
+
+---
+
+### 🔍 SURVEILLANCES OU OBSERVATIONS
+* Fiche S (surveillance active) : ☐ Non
+* Fiche R (rébellion ou comportement à risque) : ☐ Non
+* Observation spéciale : ☐ Aucune
+
+---
+
+### 📎 REMARQUES ET NOTES ADMINISTRATIVES
 ${remarques}
 
-✅ Casier vierge certifié par le SASP
-📅 Généré le : ${today}
+---
+
+### 📝 SIGNATURES & VALIDATIONS
+* Inspecteur référent : ${inspecteur}
+* Matricule : ${matricule}
+* Signature : ${signature}
+* Date : ${date_sig}
+* Cachet électronique : [✔️ SASP • UNITÉ JUDICIAIRE]
+
+---
+
+## ✅ Mention légale :
+> Ce document est généré et conservé par la Division Judiciaire de la SASP. Toute falsification, modification ou usage abusif est passible de poursuites.
 `;
 
       const output = document.getElementById("casierOutput");
@@ -125,7 +219,7 @@ ${remarques}
 
     function telechargerPDF() {
       const element = document.getElementById("casierOutput");
-      if (element.style.display === "none") {
+      if (element.style.display === "none" || element.textContent.trim() === "") {
         alert("Veuillez d'abord générer le casier.");
         return;
       }
